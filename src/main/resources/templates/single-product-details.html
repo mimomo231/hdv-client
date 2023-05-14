@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" xmlns=http://www.w3.org/1999/xhtml xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <!-- Title  -->
+    <title>Essence - Fashion Ecommerce Template</title>
+
+    <!-- Favicon  -->
+    <link rel="icon" th:href="@{/img/core-img/favicon.ico}">
+
+    <!-- Core Style CSS -->
+    <link rel="stylesheet" th:href="@{/css/core-style.css}">
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style-comment.css}">
+
+</head>
+
+<body>
+    <!-- ##### Header Area Start ##### -->
+    <header class="header_area" th:replace="header :: header"></header>
+    <!-- ##### Header Area End ##### -->
+
+    <!-- ##### Right Side Cart Area ##### -->
+    <div class="cart-bg-overlay"></div>
+
+    <div class="right-side-cart-area">
+
+        <!-- Cart Button -->
+        <div class="cart-button">
+            <a  id="rightSideCart"><img src="/img/core-img/bag.svg" alt=""> <span th:text="${session.cic}"></span></a>
+        </div>
+
+        <div class="cart-content d-flex">
+
+            <!-- Cart List Area -->
+            <div th:if="${session.cart} != null">
+                <div th:each="i : ${session.cart.items}" class="cart-list">
+                    <!-- Single Cart Item -->
+                    <div class="single-cart-item">
+                        <a href="/ecobook/" class="product-image">
+                            <img th:src="@{http://localhost:8082/api/image/{imageId}(imageId=${i.book.images.get(0).getId()})}" th:alt="${i.book.name}">
+                            <!-- Cart Item Desc -->
+                            <div class="cart-item-desc">
+                                <span class="product-remove" th:data-item-id="${i.id}"><i class="fa fa-close" aria-hidden="true"></i></span>
+                                <h6>Author: <span class="price" th:text="${i.book.author}"></span></h6>
+                                <h6>Name: <span th:text="${i.book.name}"></span></h6>
+                                <h6  class="color">Quantity: <span th:text="${i.quantity}"></span></h6>
+                                <h6>Price: <span th:text="${i.book.price}"class="price"></span></h6>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <script th:inline="javascript">
+                    document.querySelector('.cart-list').addEventListener('click', function(event) {
+                    if (event.target.matches('.product-remove, .product-remove *')) {
+                        event.preventDefault();
+                        var itemId = event.target.closest('.product-remove').getAttribute('data-item-id');
+                        window.location.href = '/cart/' + itemId;
+                    }
+                    });
+                </script>
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="cart-amount-summary">
+
+                <h2>Summary</h2>
+                <ul class="summary-table">
+                    <li><span>subtotal:</span> <span th:text="${session.subtotal}"></span></li>
+                    <li><span>delivery:</span> <span>Free</span></li>
+                    <li><span>discount:</span> <span>0%</span></li>
+                    <li><span>total:</span> <span th:text="${session.subtotal}"></span></li>
+                </ul>
+                <div th:if="${session.cart} != null" class="checkout-btn mt-100">
+                    <a href="/checkout/" class="btn essence-btn">Check out</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ##### Right Side Cart End ##### -->
+
+    <!-- ##### Single Product Details Area Start ##### -->
+    <section class="single_product_details_area d-flex align-items-center">
+
+        <!-- Single Product Thumb -->
+        <div class="single_product_thumb clearfix">
+            <div class="product_thumbnail_slides owl-carousel">
+                <img th:src="@{http://localhost:8082/api/image/{imageId}(imageId=${book.images.get(0).getId()})}" th:alt="${book.name}">
+                <img th:src="@{http://localhost:8082/api/image/{imageId}(imageId=${book.images.get(0).getId()})}" th:alt="${book.name}">
+                <img th:src="@{http://localhost:8082/api/image/{imageId}(imageId=${book.images.get(0).getId()})}" th:alt="${book.name}">
+            </div>
+        </div>
+
+        <!-- Single Product Description -->
+        <div class="single_product_desc clearfix">
+            <a href="/#">
+                <h2 th:text="${book.name}"></h2>
+            </a>
+            <h6>Price: <span class="product-price" th:text="${book.price}"></span></h6>
+            <div th:if="${session.cart} != null">
+                <div th:each="i : ${session.cart.items}">
+                    <span th:if="${i.book.id} == ${book.id}" th:text="'This book is already in your cart!!'"></span>
+                </div>
+            </div>
+
+            <h6>Author:<span  th:text="${book.author}"></span></h6>
+            <h6>Description: <span class="product-desc" th:text="${book.description}"></span> </h6>
+
+            <!-- Form -->
+            <form class="cart-form clearfix" method="post">
+                <!-- Select Box -->
+                <div class="select-box d-flex mt-50 mb-30">
+                    <select name="select" id="productSize" class="mr-5">
+                        <option value="value">Con lai : <span th:text="${book.quantity}"></span></option>
+                    </select>
+                    <select name="select" id="productColor">
+                        <option value="value">Da ban: <span th:text="${book.numberSales}"></span></option>
+                    </select>
+                </div>
+                <input type="hidden" name="bookId" id="bookId" th:value="${book.id}">
+                <input type="hidden" name="bookPrice" id="bookPrice" th:value="${book.price}">
+                <!-- Cart & Favourite Box -->
+                <div class="cart-fav-box d-flex align-items-center">
+                    <!-- Cart -->
+                    <button type="submit" name="addtocart" value="5" class="btn essence-btn">Add to cart</button>
+                    <!-- Favourite -->
+                    <div class="product-favourite ml-4">
+                        <a href="#" class="favme fa fa-heart"></a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="content-item" id="comments">
+        <div style="margin-left: 20%">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <form action="/comment" method="post">
+                            <h3 class="pull-left">New Comment</h3>
+                            <button type="submit" class="btn btn-normal pull-right">Submit</button>
+                            <input type="hidden" id="bid" name="bid" th:value="${book.id}">
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-sm-3 col-lg-2 hidden-xs">
+                                        <img class="img-responsive" src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="">
+                                    </div>
+                                    <div class="form-group col-xs-12 col-sm-9 col-lg-10">
+                                        <textarea class="form-control" id="message" name="message" placeholder="Your message" required=""></textarea>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+
+                        <h3><span th:text="${cn}"></span>Comments</h3>
+
+                        <!-- COMMENT - START -->
+                        <div th:each="c : ${comments}" class="media">
+                            <a class="pull-left" href="#"><img class="media-object" src="https://bootdey.com/img/Content/avatar/avatar1.png" alt=""></a>
+                            <div class="media-body">
+                                <h4 class="media-heading" th:text="${c.createdBy}"></h4>
+                                <p th:text="${c.context}"></p>
+                                <ul class="list-unstyled list-inline media-detail pull-left">
+                                    <li ><i class="fa fa-calendar" th:text="${c.createdAt}"></i></li>
+                                    <li ><i class="fa fa-thumbs-up"></i>14</li>
+                                </ul>
+                                <ul class="list-unstyled list-inline media-detail pull-right">
+                                    <li class="" th:if="${session.user} != null">
+                                        <a th:if="${session.user.accountId} == ${c.userId}" th:href="@{/comment(bid=${c.productId}, id=${c.id})}">Delete</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- COMMENT - END -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+    <!-- ##### Single Product Details Area End ##### -->
+
+    <!-- ##### Footer Area Start ##### -->
+    <div th:replace="footer :: footer"></div>
+    <!-- ##### Footer Area End ##### -->
+
+    <!-- jQuery (Necessary for All JavaScript Plugins) -->
+    <script src="/js/jquery/jquery-2.2.4.min.js"></script>
+    <!-- Popper js -->
+    <script src="/js/popper.min.js"></script>
+    <!-- Bootstrap js -->
+    <script src="/js/bootstrap.min.js"></script>
+    <!-- Plugins js -->
+    <script src="/js/plugins.js"></script>
+    <!-- Classy Nav js -->
+    <script src="/js/classy-nav.min.js"></script>
+    <!-- Active js -->
+    <script src="/js/active.js"></script>
+
+</body>
+
+</html>
